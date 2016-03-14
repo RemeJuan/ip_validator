@@ -1,8 +1,23 @@
 body {
-  padding: 50px;
+  padding: 20px;
+  width: 560px;
+	margin: 0 auto;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
 }
 
 a {
   color: #00B7FF;
+}
+
+form {
+	margin-bottom: 40px
+}
+
+textarea, table {
+	width: 100%;
+}
+
+th {
+	text-align: left;
 }
