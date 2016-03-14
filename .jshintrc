@@ -1,0 +1,11 @@
+{
+	"devel" 			: true,
+	"strict" 			: true,
+	"globalstrict": true,
+  "esnext"			: true,
+  "browser"			: true,
+  "node"				: true,
+  "globals" 		: {
+  	"angular"		:true
+  }
+}
