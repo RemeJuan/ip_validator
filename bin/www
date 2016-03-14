@@ -1,25 +1,28 @@
 #!/usr/bin/env node
+'use strict';
 
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('ttt:server');
-var http = require('http');
+let app   = require('../app'),
+    debug = require('debug')('ttt:server'),
+    http  = require('http'),
+    fs    = require('fs'),
+    server,
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+    port = normalizePort(process.env.PORT || '3001');
+
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-
-var server = http.createServer(app);
+server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -34,7 +37,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -53,14 +56,20 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
+ if (!fs.existsSync('public/results')){
+     fs.mkdirSync('public/results');
+ }
+
+ if (!fs.existsSync('public/uploads')){
+     fs.mkdirSync('public/uploads');
+ }
+
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  let bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -82,9 +91,7 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  let addr = server.address(),
+      bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
