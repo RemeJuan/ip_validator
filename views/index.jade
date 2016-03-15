@@ -3,8 +3,14 @@ extends layout
 block content
   h1= title
   p= desc
+  if links
+    p
+      div(class="half")
+        a(href=links.valid target="_blank") Valid Data
+      div(class="half")
+        a(href=links.invalid target="_blank") Invalid Data
   form(method="POST" enctype="multipart/form-data")
     p
-      input(type="file" name="fileUpload")
+      input(type="file" name="fileUpload"  accept=".txt")
     p
-      button(type="submit") Submit
+      button(type="submit") Upload
