@@ -21,3 +21,8 @@ textarea, table {
 th {
 	text-align: left;
 }
+
+.half {
+	width: 50%;
+	display: inline-block;
+}
