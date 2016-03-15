@@ -21,55 +21,45 @@ router.route('/')
 .get((req, res) => {
 	let vm = {
 		title: 'IP Validator',
-		desc: `Use the text box to validate if the input is an IP address or not, enter 1 per line.`
+		desc: `Upload a text file with 1 item per line to filter out all valid IP addresses`
 	};
 
   res.render('index', vm);
 })
 .post(upload.single('fileUpload'), (req, res) => {
-	console.log(req.file);
-
-	new DataReader (req.file.path, { encoding: "utf8" })
-	    .on ("error", function (error){
-	        console.log ("error: " + error);
-	    })
-	    .on ("line", function (line){
-	      console.log ("line: " + line, validateIPaddress(line));
-	    })
-	    .on ("end", function (){
-	        console.log ("EOF");
-	    })
-	    .read ();
-
-	// let rows,
-	// 		validData = fs.createWriteStream(`./public/results/valid_ips_${new Date().getTime()}.txt`),
-	// 		invalidData = fs.createWriteStream(`./public/results/invalid_ips_${new Date().getTime()}.txt`),
-			let vm = {
+	let	date = new Date().getTime(),
+			validData = `./public/results/valid_ips_${date}.txt`,
+			invalidData = `./public/results/invalid_ips_${date}.txt`,
+			valArr = [], invalArr = [],
+			vm = {
 				title: 'IP Validator',
-				desc: `Use the text box to validate if the input is an IP address or not, enter 1 per line.`,
-				response: 'List processed successfully'
+				desc: 'List processed successfully, you can download the processed data using the following links',
+				links: {
+					valid: `/results/valid_ips_${date}.txt`,
+					invalid: `/results/invalid_ips_${date}.txt`
+				}
 			};
 
-	// rows = req.body.validator.replace(/\r\n/g,"\n").split("\n");
-
-	// validData.once('open', (fd) => {
-	//   rows.forEach((data) => {
-	//   	if( validateIPaddress(data) ) {
-	//   		validData.write(`${data}\n`);
-	//   	}
-	//   });
-	//   validData.end();
-	// });
-
-	// invalidData.once('open', (fd) => {
-	//   rows.forEach((data) => {
-	//   	if( !validateIPaddress(data) ) {
-	//   		invalidData.write(`${data}\n`);
-	//   	}
-	//   });
-
-	//   invalidData.end();
-	// });
+	new DataReader(req.file.path, { encoding: "utf8" })
+	    .on ("error", error => {
+	        console.log ("error: " + error);
+	    })
+	    .on ("line", line => {
+	      if(validateIPaddress(line)) {
+	      	fs.open(validData, 'a', (err, fd) => {
+	      		fs.write(fd, `${line}\r\n`);
+	      	});
+	      }
+	      else {
+	      	fs.open(invalidData, 'a', (err, fd) => {
+	      		fs.write(fd, `${line}\r\n`);
+	      	});
+	      }
+	    })
+	    .on ("end", () => {
+	        fs.unlink(req.file.path);
+	    })
+	    .read();
 
 	res.render('index', vm);
 });
