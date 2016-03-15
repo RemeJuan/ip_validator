@@ -24,6 +24,7 @@ router.route('/')
 		desc: `Upload a text file with 1 item per line to filter out all valid IP addresses`
 	};
 
+	// Render view
   res.render('index', vm);
 })
 .post(upload.single('fileUpload'), (req, res) => {
@@ -45,23 +46,49 @@ router.route('/')
 	        console.log ("error: " + error);
 	    })
 	    .on ("line", line => {
+	    	//Loop through each line and check if valid IP and push to relevant array
 	      if(validateIPaddress(line)) {
-	      	fs.open(validData, 'a', (err, fd) => {
-	      		fs.write(fd, `${line}\r\n`);
-	      	});
+	      	valArr.push(line);
 	      }
 	      else {
-	      	fs.open(invalidData, 'a', (err, fd) => {
-	      		fs.write(fd, `${line}\r\n`);
-	      	});
+	      	invalArr.push(line);
 	      }
 	    })
 	    .on ("end", () => {
-	        fs.unlink(req.file.path);
+	    	// Sort the array
+	    	invalArr = invalArr.sort((a, b) => b-a);
+	    	valArr = valArr.sort((a, b) => b-a);
+
+	    	//Write data to files
+	    	writeFile(validData, invalidData, valArr, invalArr);
+
+	    	//Remove uploaded file
+	      fs.unlink(req.file.path);
 	    })
 	    .read();
 
+	// Render updated view
 	res.render('index', vm);
 });
 
 module.exports = router;
+
+function writeFile(validData, invalidData, valArr, invalArr) {
+	//Open up valid file and loop through array to write each value on a new line
+	fs.open(validData, 'a', (err, fd) => {
+		valArr.forEach(line => {
+			fs.write(fd, `${line}\r\n`);
+		});
+		// Close the file once done
+		fs.close(fd);
+	});
+
+	//Open up valid file and loop through array to write each value on a new line
+	fs.open(invalidData, 'a', (err, fd) => {
+		invalArr.forEach(line => {
+			fs.write(fd, `${line}\r\n`);
+		});
+		// Close the file once done
+		fs.close(fd);
+	});
+}
