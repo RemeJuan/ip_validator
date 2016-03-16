@@ -1,4 +1,4 @@
-# Takealot Take On Test
+# IP Address validator
 
 **Requirements**
 * Node 4.2.2+
